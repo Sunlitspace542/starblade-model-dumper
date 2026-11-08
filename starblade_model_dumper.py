@@ -59,7 +59,10 @@ class StarbladePointROM:
     }
     
     PATTERN_GALAXIAN3 = {
-        0: ("ptoh.bin", "ptou.bin", "ptol.bin"),
+        0: (
+            ("glc1-pt0-h.bin", "glc1-pt0-u.bin", "glc1-pt0-l.bin"),
+            ("ptoh.bin", "ptou.bin", "ptol.bin"),
+        ),
     }
     
     # Magic values
@@ -139,12 +142,14 @@ class StarbladePointROM:
                 print("✗ Bank 1 is the continuation of the Starblade point-ROM address space; bank 0 ROMs are required")
                 return False
 
-            names = self.PATTERN_GALAXIAN3.get(self.bank)
-            if not names:
-                print(f"✗ Could not find ROM files for bank {self.bank}")
-                return False
-            paths = tuple(os.path.join(self.rom_dir, name) for name in names)
-            if not all(os.path.exists(path) for path in paths):
+            name_patterns = self.PATTERN_GALAXIAN3.get(self.bank, ())
+            paths = None
+            for names in name_patterns:
+                candidate_paths = tuple(os.path.join(self.rom_dir, name) for name in names)
+                if all(os.path.exists(path) for path in candidate_paths):
+                    paths = candidate_paths
+                    break
+            if paths is None:
                 print(f"✗ Could not find ROM files for bank {self.bank}")
                 return False
             with open(paths[0], 'rb') as f:
