@@ -322,7 +322,7 @@ class StarbladePointROM:
                 z = self._signed16(self.words[i + 2])
                 i += 3
                 
-                vertices.append(Vertex(x, y, z))
+                vertices.append(Vertex(-x, y, z))
             
             # Read quad count
             if i >= len(self.words):
@@ -633,7 +633,7 @@ class Videoscape3DG1Exporter:
                 output.write("3DG1\n")
                 output.write(f"{len(vertices)}\n")
                 for vertex in vertices:
-                    output.write(f"{vertex.x} {vertex.y} {vertex.z}\n")
+                    output.write(f"{-vertex.x} {vertex.y} {vertex.z}\n")
                 for indices, bgr in faces:
                     index_text = " ".join(str(index) for index in indices)
                     output.write(f"{len(indices)} {index_text} 0x{bgr:06X}\n")
